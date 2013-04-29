@@ -7,7 +7,7 @@ setup(
     package_data={"wishlib.qt": ["images/*.*", "style/*.*"]},
     author="Cesar Saez",
     author_email="cesarte@gmail.com",
-    description="Core library for wishdev projects",
+    description="Multi-purpose library used by wishdev develoments",
     url="http://wishdev.blogspot.com",
     license="GNU General Public License (GPLv3)",
 )

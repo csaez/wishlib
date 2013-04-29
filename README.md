@@ -1,7 +1,7 @@
 =======
 WISHLIB
 =======
-`wishlib` is a core multi-purpose library for WishDev developments.
+`wishlib` is a multi-purpose library used by WishDev developments.
 
 INSTALLATION
 ------------
