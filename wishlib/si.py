@@ -98,11 +98,11 @@ class SIWrapper(object):
     def auto_update(cls, function):
         """
         This class method could be used as decorator on subclasses, it ensures
-        update_data() is called after function execution.
+        update method is called after function execution.
         """
         def wrapper(self, *args, **kwargs):
             f = function(self, *args, **kwargs)
-            self.update_data()
+            self.update()
             return f
         return wrapper
 
@@ -131,7 +131,7 @@ class SIWrapper(object):
                 self.__setattr__(str(param.Name), decode(str(param.Value)),
                                  skip_softimage=True)
 
-    def update_data(self):
+    def update(self):
         """
         This method should be called when you want to ensure all cached attributes
         are in sync with the actual object attributes at runtime.
