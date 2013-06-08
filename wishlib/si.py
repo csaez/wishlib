@@ -94,6 +94,18 @@ class SIWrapper(object):
     custom parameters where encoded/serialized data is stored.
     """
 
+    @classmethod
+    def auto_update(cls, function):
+        """
+        This class method could be used as decorator on subclasses, it ensures
+        update_data() is called after function execution.
+        """
+        def wrapper(self, *args, **kwargs):
+            f = function(self, *args, **kwargs)
+            self.update_data()
+            return f
+        return wrapper
+
     # attribute prefixes excluded from serialization
     EXCEPTIONS = ("Name", "obj", "holder", "_holder")
 
