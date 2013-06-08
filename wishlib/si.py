@@ -95,7 +95,7 @@ class SIWrapper(object):
     """
 
     # attribute prefixes excluded from serialization
-    EXCEPTIONS = ("Name", "obj", "holder", "_")
+    EXCEPTIONS = ("Name", "obj", "holder", "_holder")
 
     def __init__(self, obj, holdername="wrapperdata"):
         """
@@ -106,7 +106,9 @@ class SIWrapper(object):
         softimage custom property name.
         """
         self.obj = obj
-        self.holdername = holdername
+        self.holder = self.obj.Properties(holdername)
+        if not self.holder:
+            self.holder = self.obj.AddCustomProperty(holdername)
         # every time we get a string-like value from softimage's sdk it should be
         # converted to str, in some version they switched to unicode but the
         # code still works with str internally.
@@ -136,14 +138,6 @@ class SIWrapper(object):
     def _validate_key(self, key):
         """Returns a boolean indicating if the attribute name is valid or not"""
         return not any([key.startswith(i) for i in self.EXCEPTIONS])
-
-    @property
-    def holder(self):
-        if not hasattr(self, "_holder"):
-            self._holder = self.obj.Properties(self.holdername)
-            if not self._holder:
-                self._holder = self.obj.AddCustomProperty(self.holdername)
-        return disp(self._holder)
 
     def __setattr__(self, key, value, skip_softimage=False):
         super(SIWrapper, self).__setattr__(key, value)
