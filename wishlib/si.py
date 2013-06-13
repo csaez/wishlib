@@ -75,7 +75,11 @@ def _decode(dataIn):
         fullname = dataIn.replace("si:", "")
         dataOut = siget(fullname)
     else:
-        dataOut = eval(dataIn)
+        try:
+            dataOut = eval(dataIn)
+        except:
+            dataOut = dataIn
+            print "WARNING:", dataIn, "cant be decoded."
     return dataOut
 
 encode = lambda x: repr(map_recursive(_encode, x))
