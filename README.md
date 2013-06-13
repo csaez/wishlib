@@ -1,25 +1,20 @@
 =======
-WISHLIB
+WishLib
 =======
-`wishlib` is a multi-purpose library used by WishDev developments.
+`wishlib` is a multi-purpose library used by
+[wishdev](http://wishdev.blogspot.com) developments.
+
+PREREQUISITES
+-------------
+- PyQt4 (http://www.riverbankcomputing.co.uk/software/pyqt/download)
+- PyQtForSoftimage (http://github.com/caron/PyQtForSoftimage)
+- distribute (http://python-distribute.org/distribute_setup.py)
 
 INSTALLATION
 ------------
-Some wrappers works with pyqt4, grab it from
-[here](http://www.riverbankcomputing.co.uk/software/pyqt/download).
-
-Then...
+You can get `wishlib` from the Python Package Index.
 
     pip install wishlib
-
-or
-
-    easy_install wishlib
-
-or running the setup script from your local repository:
-
-    python setup.py install
-
 
 NOTES
 -----
