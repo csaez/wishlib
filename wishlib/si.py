@@ -4,16 +4,6 @@ from win32com.client import constants as C
 from PyQt4.QtGui import QWidget
 
 
-# HELPER FUNCTIONS
-def inside_softimage():
-    """Returns a boolean indicating if the code is executed inside softimage."""
-    try:
-        disp('XSI.Application')
-        return True
-    except:
-        return False
-
-
 # SOFTIMAGE SHORTCUTS
 si = disp('XSI.Application')
 log = si.LogMessage
@@ -41,6 +31,34 @@ def siget(fullname=""):
     if not len(fullname):
         return None
     return sidict.GetObject(fullname, False)
+
+
+# HELPER FUNCTIONS
+def inside_softimage():
+    """Returns a boolean indicating if the code is executed inside softimage."""
+    try:
+        disp('XSI.Application')
+        return True
+    except:
+        return False
+
+
+def show_qt(qt_class):
+    """
+    Shows and raise a pyqt window inside softimage ensuring it's not duplicated
+    (if it's duplicated then raise the old one).
+    qt_class argument should be a class/subclass of QMainWindow, QDialog or any
+    non modal Qt top-level window supported by PyQtForSoftimage plugin.
+    """
+    dialog = None
+    anchor = sianchor()
+    for i in anchor.children():
+        if type(i).__name__ == qt_class.__name__:
+            dialog = i
+    if not dialog:
+        dialog = qt_class(anchor)
+    dialog.show()
+    dialog.raise_()  # ensures dialog window is on top
 
 
 # ENCODE / DECODE SOFTIMAGE DATA
@@ -156,8 +174,10 @@ class SIWrapper(object):
         return not any([key.startswith(i) for i in self.EXCEPTIONS])
 
     def __setattr__(self, key, value, skip_softimage=False):
-        super(SIWrapper, self).__setattr__(key, value)
-        if skip_softimage or not self._validate_key(key):
+        object.__setattr__(self, key, value)
+        # super(SIWrapper, self).__setattr__(key, value)
+        if any((skip_softimage, not self._validate_key(key),
+                type(value) == property)):
             return
         # filtering softimage objects
         if repr(value) == "<COMObject <unknown>>":
