@@ -113,7 +113,7 @@ def map_recursive(function, iterable):
 
 def _encode(dataIn):
     dataOut = repr(dataIn)
-    if repr(dataIn) == "<COMObject <unknown>>":
+    if "<COMObject " in repr(dataIn):
         dataOut = "si:" + str(dataIn.FullName)
     return dataOut
 
@@ -209,8 +209,8 @@ class SIWrapper(object):
         if any((skip_softimage, not self._validate_key(key),
                 type(value) == property)):
             return
-        # filtering softimage objects
-        if repr(value) == "<COMObject <unknown>>":
+        # check softimage objects
+        if "<COMObject " in repr(value):
             # check if value has a FullName attribute, if not means it's a
             # softimage collection and should be converted to a list in order to
             # work with map_recursively later on.
