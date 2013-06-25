@@ -1,3 +1,4 @@
+from functools import wraps
 import sip
 from win32com.client import Dispatch as disp
 from win32com.client import constants as C
@@ -59,6 +60,35 @@ def show_qt(qt_class):
         dialog = qt_class(anchor)
     dialog.show()
     dialog.raise_()  # ensures dialog window is on top
+
+
+# DECORATORS
+def no_inspect(function):
+    @wraps(function)
+    def decorated(*args, **kwds):
+        # backup old autoinspect
+        param = siget("preferences.Interaction.autoinspect")
+        old_value = param.Value
+        # set autoinspect off
+        param.Value = False
+        # execute decorated function
+        f = function(*args, **kwds)
+        # retore autoinspect
+        param.Value = old_value
+        return f
+    return decorated
+
+
+def one_undo(function):
+    @wraps(function)
+    def decorated(*args, **kwargs):
+        try:
+            si.BeginUndo()
+            f = function(*args, **kwargs)
+        finally:
+            si.EndUndo()
+            return f
+    return decorated
 
 
 # ENCODE / DECODE SOFTIMAGE DATA
