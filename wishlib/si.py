@@ -44,7 +44,7 @@ def inside_softimage():
         return False
 
 
-def show_qt(qt_class):
+def show_qt(qt_class, modal=False):
     """
     Shows and raise a pyqt window inside softimage ensuring it's not duplicated
     (if it's duplicated then raise the old one).
@@ -53,13 +53,19 @@ def show_qt(qt_class):
     """
     dialog = None
     anchor = sianchor()
+    # look for a previous instance
     for i in anchor.children():
         if type(i).__name__ == qt_class.__name__:
             dialog = i
+    # if there's no previous instance then create a new one
     if not dialog:
         dialog = qt_class(anchor)
-    dialog.show()
-    dialog.raise_()  # ensures dialog window is on top
+    # show dialog
+    if modal:
+        dialog.exec_()
+    else:
+        dialog.show()
+        dialog.raise_()  # ensures dialog window is on top
 
 
 # DECORATORS
