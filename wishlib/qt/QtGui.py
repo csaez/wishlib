@@ -1,7 +1,6 @@
 from PyQt4 import QtGui, QtCore
 import os
 
-__all__ = ["QWidget", "QMenu", "QDialog", "QProgressDialog", "QMainWindow"]
 file_dir = os.path.dirname(__file__)
 
 
@@ -21,6 +20,7 @@ def _setIcon(widget):
 
 
 class QWidget(QtGui.QWidget):
+
     def __init__(self):
         super(QWidget, self).__init__()
         # styling
@@ -31,6 +31,7 @@ class QWidget(QtGui.QWidget):
 
 
 class QProgressDialog(QtGui.QProgressDialog):
+
     def __init__(self, parent, label=""):
         super(QProgressDialog, self).__init__(parent)
         # progress dialog defaults
@@ -49,6 +50,7 @@ class QProgressDialog(QtGui.QProgressDialog):
 
 
 class QMenu(QtGui.QMenu):
+
     def __init__(self, parent):
         super(QMenu, self).__init__(parent)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
@@ -56,6 +58,7 @@ class QMenu(QtGui.QMenu):
 
 
 class QDialog(QtGui.QDialog):
+
     def __init__(self, parent):
         super(QDialog, self).__init__(parent)
         # dialog defaults
@@ -69,11 +72,9 @@ class QDialog(QtGui.QDialog):
 
 
 class QMainWindow(QtGui.QMainWindow):
+
     def __init__(self, parent):
         super(QMainWindow, self).__init__(parent)
-        # dialog defaults
-        self.setWindowFlags(QtCore.Qt.Window |
-                            QtCore.Qt.WindowMinimizeButtonHint)
         # styling
         _setStyle(self, True)
         _setIcon(self)
