@@ -17,4 +17,4 @@ You can get `wishlib` from the Python Package Index.
 
 Notes
 -----
-For more info, refer to the documentation.
+For more info, refer to the [documentation](https://github.com/wishdev-project/wishlib/wiki).
