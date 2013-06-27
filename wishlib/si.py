@@ -44,12 +44,13 @@ def inside_softimage():
         return False
 
 
-def show_qt(qt_class, modal=False):
+def show_qt(qt_class, modal=False, onshow_event=None):
     """
     Shows and raise a pyqt window inside softimage ensuring it's not duplicated
     (if it's duplicated then raise the old one).
     qt_class argument should be a class/subclass of QMainWindow, QDialog or any
     non modal Qt top-level window supported by PyQtForSoftimage plugin.
+    Returns the qt_class instance.
     """
     dialog = None
     anchor = sianchor()
@@ -60,12 +61,15 @@ def show_qt(qt_class, modal=False):
     # if there's no previous instance then create a new one
     if not dialog:
         dialog = qt_class(anchor)
+    if onshow_event:
+        onshow_event(dialog)
     # show dialog
     if modal:
         dialog.exec_()
     else:
         dialog.show()
         dialog.raise_()  # ensures dialog window is on top
+    return dialog
 
 
 # DECORATORS
@@ -87,13 +91,23 @@ def no_inspect(function):
 
 def one_undo(function):
     @wraps(function)
-    def decorated(*args, **kwargs):
+    def decorated(*args, **kwds):
         try:
             si.BeginUndo()
-            f = function(*args, **kwargs)
+            f = function(*args, **kwds)
         finally:
             si.EndUndo()
             return f
+    return decorated
+
+
+def OverrideWin32Controls(function):
+    @wraps(function)
+    def decorated(*args, **kwds):
+        si.Desktop.SuspendWin32ControlsHook()
+        f = function(*args, **kwds)
+        si.Desktop.RestoreWin32ControlsHook()
+        return f
     return decorated
 
 

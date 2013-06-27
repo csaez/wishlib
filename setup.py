@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="wishlib",
-    version="0.1.3",
+    version="0.1.4",
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     package_data={"wishlib.qt": ["images/*.*", "style/*.*"]},
     author="Cesar Saez",
