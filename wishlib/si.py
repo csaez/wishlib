@@ -49,7 +49,9 @@ def show_qt(qt_class, modal=False, onshow_event=None):
     Shows and raise a pyqt window inside softimage ensuring it's not duplicated
     (if it's duplicated then raise the old one).
     qt_class argument should be a class/subclass of QMainWindow, QDialog or any
-    non modal Qt top-level window supported by PyQtForSoftimage plugin.
+    top-level window supported by PyQtForSoftimage plugin.
+    onshow_event provides a way to pass a function to execute before the window
+    is showed on screen, it can be specially handy on modal windows.
     Returns the qt_class instance.
     """
     dialog = None
@@ -70,6 +72,18 @@ def show_qt(qt_class, modal=False, onshow_event=None):
         dialog.show()
         dialog.raise_()  # ensures dialog window is on top
     return dialog
+
+
+def cmd_wrapper(cmd_name, **kwds):
+    """Wrap and execute a softimage command accepting named arguments"""
+    cmd = si.Commands(cmd_name)
+    if not cmd:
+        raise Exception(cmd_name + " doesnt found!")
+    for arg in cmd.Arguments:
+        value = kwds.get(arg.Name)
+        if value:
+            arg.Value = value
+    return cmd.Execute()
 
 
 # DECORATORS
