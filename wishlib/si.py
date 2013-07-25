@@ -1,8 +1,9 @@
-from functools import wraps
+import os
 import sip
+from functools import wraps
 from win32com.client import Dispatch as disp
 from win32com.client import constants as C
-from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QWidget, QApplication
 
 
 # SOFTIMAGE SHORTCUTS
@@ -20,10 +21,17 @@ siut = disp('XSI.Utils')
 
 def sianchor():
     """
-    Return pyqt windows' anchor inside softimage, this function relies on
+    Return pyqt anchor inside softimage, this function relies on
     pyqtforsoftimage beta5 (https://github.com/caron/PyQtForSoftimage).
     """
-    return sip.wrapinstance(long(si.getQtSoftimageAnchor()), QWidget)
+    # get the anchor from pyqtfromsoftimage addon
+    sianchor = si.getQtSoftimageAnchor()
+    # load plugins
+    import PyQt4
+    path = os.path.join(os.path.dirname(PyQt4.__file__), "plugins")
+    QApplication.instance().addLibraryPath(path)
+    # return a python wrapped anchor
+    return sip.wrapinstance(long(sianchor), QWidget)
 
 
 def siget(fullname=""):
