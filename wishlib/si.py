@@ -154,9 +154,10 @@ def map_recursive(function, iterable):
 
 
 def _encode(dataIn):
-    dataOut = repr(dataIn)
-    if "<COMObject " in repr(dataIn):
+    try:
         dataOut = "si:" + str(dataIn.FullName)
+    except:
+        dataOut = repr(dataIn)
     return dataOut
 
 
@@ -168,8 +169,9 @@ def _decode(dataIn):
         try:
             dataOut = eval(dataIn)
         except:
-            dataOut = dataIn
-            print "WARNING:", dataIn, "cant be decoded."
+            # dataOut = dataIn
+            # print "WARNING:", dataIn, "cant be decoded."
+            return None
     return dataOut
 
 encode = lambda x: repr(map_recursive(_encode, x))
@@ -194,6 +196,7 @@ class SIWrapper(object):
         This class method could be used as decorator on subclasses, it ensures
         update method is called after function execution.
         """
+
         def wrapper(self, *args, **kwargs):
             f = function(self, *args, **kwargs)
             self.update()
@@ -211,6 +214,7 @@ class SIWrapper(object):
         self.obj) and an optional holdername argument which will be used as the
         softimage custom property name.
         """
+        self.namespace = "data_"
         self.obj = obj
         self.holder = self.obj.Properties(holdername)
         if not self.holder:
@@ -222,7 +226,8 @@ class SIWrapper(object):
             if self._validate_key(str(param.Name)):
                 # We are passing skip_softimage = True, otherwise parameters
                 # would be overriden with raw values. Internal use only!
-                self.__setattr__(str(param.Name), decode(str(param.Value)),
+                safe_name = param.Name.replace(self.namespace, "")
+                self.__setattr__(str(safe_name), decode(str(param.Value)),
                                  skip_softimage=True)
 
     def update(self):
@@ -237,32 +242,40 @@ class SIWrapper(object):
         attribute, SIWrapper isn't aware that the object returned was modified
         and the cached data is not updated.
         """
+        self.holder = siget(self.holder.FullName)  # fix dispatch issues
         for key, value in self.__dict__.iteritems():
+            key = self.namespace + key
             if self._validate_key(key):
+                if not self.holder.Parameters(key):
+                    self.holder.AddParameter3(key, C.siString)
                 self.holder.Parameters(key).Value = encode(value)
 
     def _validate_key(self, key):
         """Returns a boolean indicating if the attribute name is valid or not"""
         return not any([key.startswith(i) for i in self.EXCEPTIONS])
+        # return True
 
     def __setattr__(self, key, value, skip_softimage=False):
         object.__setattr__(self, key, value)
         # super(SIWrapper, self).__setattr__(key, value)
         if any((skip_softimage, not self._validate_key(key),
-                type(value) == property)):
+                type(value) == property, not hasattr(self, "holder"))):
             return
-        # check softimage objects
-        if "<COMObject " in repr(value):
-            # check if value has a FullName attribute, if not means it's a
-            # softimage collection and should be converted to a list in order to
-            # work with map_recursively later on.
-            # As value is a softimage object the only way to check it is duck
-            # typing.
-            try:
-                value.FullName
-            except:
-                value = list(value)
+        # CHECK SOFTIMAGE OBJECTS
+        # check if value has a FullName attribute, if not means it's a
+        # softimage collection and should be converted to a list in order to
+        # work with map_recursively later on.
+        try:
+            if si.ClassName(value):  # is a softimage object
+                try:
+                    value.FullName  # has a fullname
+                except:
+                    value = list(value)  # it's a xsicollection
+        except:
+            pass
         # store encoded attribute's data into its own custom parameter
+        self.holder = siget(self.holder.FullName)
+        key = self.namespace + key
         if not self.holder.Parameters(key):
             self.holder.AddParameter3(key, C.siString)
         self.holder.Parameters(key).Value = encode(value)
@@ -270,6 +283,7 @@ class SIWrapper(object):
     def __delattr__(self, key):
         super(SIWrapper, self).__delattr__(key)
         # remove the custom parameter
+        key = self.namespace + key
         param = self.holder.Parameters(key)
         if param:
             self.holder.RemoveParameter(param)
