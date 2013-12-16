@@ -21,6 +21,15 @@ QWidget:item:selected {
   background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
 }
 
+QWidget:disabled {
+  color: #404040;
+  background-color: #323232;
+}
+
+QWidget:focus {
+  border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
+}
+
 QMenuBar::item {
   background: transparent;
 }
@@ -38,6 +47,10 @@ QMenuBar::item:pressed {
   padding-bottom:1px;
 }
 
+QMenuBar:focus {
+  border: 0px;
+}
+
 QMenu {
   border: 1px solid #000;
 }
@@ -48,15 +61,6 @@ QMenu::item {
 
 QMenu::item:selected {
   color: #000000;
-}
-
-QWidget:disabled {
-  color: #404040;
-  background-color: #323232;
-}
-
-QWidget:focus {
-  border: 2px solid QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
 }
 
 QAbstractItemView {
