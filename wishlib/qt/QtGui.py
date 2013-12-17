@@ -15,7 +15,7 @@ def _setStyle(widget, force_style_factory=True):
 
 
 def _setIcon(widget):
-    icon_file = os.path.join(file_dir, "images", "W-icon.png")
+    icon_file = os.path.join(file_dir, "images", "cs-icon.png")
     widget.setWindowIcon(QtGui.QIcon(icon_file))
 
 
