@@ -1,28 +1,4 @@
-from collections import namedtuple
 from .shortcuts import simath
-
-
-def raycast(geometry, position, direction):
-    geometry = geometry.ActivePrimitive.Geometry
-    p = simath.CreateVector3(position)
-    d = simath.CreateVector3(direction)
-
-    # convert to geometry space
-    space = geometry.Parent.Parent3DObject.Kinematics.Global.Transform
-    p = simath.MapWorldPositionToObjectSpace(space, p).Get2()
-    d = simath.MapWorldOrientationToObjectSpace(space, d).Get2()
-
-    # raycast
-    location = geometry.GetRaycastIntersections(p, d)
-    pos = zip(*geometry.EvaluatePositions(location))[0]
-    pos = simath.CreateVector3(pos)
-    normal = zip(*geometry.EvaluateNormals(location, 1))[0]
-    normal = simath.CreateVector3(normal)
-
-    # convert to world space and return a namedtuple
-    pos = simath.MapObjectPositionToWorldSpace(space, pos).Get2()
-    normal = simath.MapObjectOrientationToWorldSpace(space, normal).Get2()
-    return namedtuple("raycast", ["position", "normal"])(pos, normal)
 
 
 def direction_to_rotation(direction, up_vector):
@@ -34,3 +10,24 @@ def direction_to_rotation(direction, up_vector):
     rotation = simath.CreateRotation()
     rotation.SetFromXYZAxes(x, y, z)
     return rotation
+
+
+def multiply_vector_matrix(vector3, matrix4):
+    tm = simath.CreateTransform()
+    tm.SetTranslation(vector3)
+    m = tm.Matrix4
+    m.MulInPlace(matrix4)
+    tm.SetMatrix4(m)
+    return tm.Translation
+
+
+def rotate_vector(vector3, rotation):
+    tm1 = simath.CreateTransform()
+    tm1.SetTranslation(vector3)
+    m1 = tm1.Matrix4
+    tm2 = simath.CreateTransform()
+    tm2.SetRotation(rotation)
+    m2 = tm2.Matrix4
+    m1.MulInPlace(m2)
+    tm1.SetMatrix4(m1)
+    return tm1.Translation
