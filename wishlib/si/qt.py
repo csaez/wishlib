@@ -33,12 +33,13 @@ def show_qt(qt_class, modal=False, onshow_event=None):
     dialog = None
     anchor = sianchor()
     # look for a previous instance
-    for i in anchor.children():
-        if type(i).__name__ == qt_class.__name__:
-            dialog = i
+    for d in anchor.children():
+        if isinstance(d, qt_class):
+            dialog = d
     # if there's no previous instance then create a new one
-    if not dialog:
+    if dialog is None:
         dialog = qt_class(anchor)
+    # execute callback
     if onshow_event:
         onshow_event(dialog)
     # show dialog

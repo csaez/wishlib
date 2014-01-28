@@ -1,6 +1,6 @@
 from functools import wraps
 from .QtGui import QProgressDialog
-from ..si import sianchor
+from ..si import C, log, sianchor
 
 
 def progressbar(label="Work in progress...", anchor=None):
@@ -13,6 +13,9 @@ def progressbar(label="Work in progress...", anchor=None):
             pb.show()
             try:
                 f = function(*args, **kwds)
+            except Exception as err:
+                log(err, C.siError)
+                f = None
             finally:
                 pb.close()
             return f
@@ -23,14 +26,17 @@ def progressbar(label="Work in progress...", anchor=None):
 def bussy(function):
     @wraps(function)
     def _decorated(*args, **kwds):
-        self = args[0]
+        ui = args[0]
         # disable window
-        self.setEnabled(False)
-        self.repaint()
+        ui.setEnabled(False)
+        ui.repaint()
         try:
             f = function(*args, **kwds)
+        except Exception as err:
+            log(err, C.siError)
+            f = None  # workaround UnboundLocalError
         finally:
             # cleanup
-            self.setEnabled(True)
+            ui.setEnabled(True)
             return f
     return _decorated
