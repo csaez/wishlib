@@ -12,6 +12,7 @@ def _setStyle(widget, force_style_factory=True):
     with file(style_file) as f:
         stylesheet = f.read()
     widget.setStyleSheet(stylesheet)
+    _setIcon(widget)
 
 
 def _setIcon(widget):
@@ -25,7 +26,6 @@ class QWidget(QtGui.QWidget):
         super(QWidget, self).__init__()
         # styling
         _setStyle(self, True)
-        _setIcon(self)
         # garbage collection
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
@@ -44,7 +44,6 @@ class QProgressDialog(QtGui.QProgressDialog):
         self.setAutoClose(True)
         # styling
         _setStyle(self, False)
-        _setIcon(self)
         # garbage collection
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
@@ -66,7 +65,6 @@ class QDialog(QtGui.QDialog):
                             QtCore.Qt.WindowMinimizeButtonHint)
         # styling
         _setStyle(self, True)
-        _setIcon(self)
         # garbage collection
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
@@ -77,6 +75,5 @@ class QMainWindow(QtGui.QMainWindow):
         super(QMainWindow, self).__init__(parent)
         # styling
         _setStyle(self, True)
-        _setIcon(self)
         # garbage collection
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)

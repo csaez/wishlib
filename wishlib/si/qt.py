@@ -3,6 +3,7 @@ import sip
 from PyQt4.QtGui import QWidget, QApplication
 
 from .shortcuts import si
+from ..qt.QtGui import _setStyle
 
 
 def sianchor():
@@ -20,7 +21,7 @@ def sianchor():
     return sip.wrapinstance(long(sianchor), QWidget)
 
 
-def show_qt(qt_class, modal=False, onshow_event=None):
+def show_qt(qt_class, modal=False, onshow_event=None, force_style=False):
     """
     Shows and raise a pyqt window inside softimage ensuring it's not duplicated
     (if it's duplicated then raise the old one).
@@ -48,4 +49,6 @@ def show_qt(qt_class, modal=False, onshow_event=None):
     else:
         dialog.show()
         dialog.raise_()  # ensures dialog window is on top
+    if force_style:
+        _setStyle(dialog)
     return dialog
