@@ -5,16 +5,15 @@ WishLib
 
 Requirements / Dependencies
 -------------
-- [distribute](http://python-distribute.org/distribute_setup.py)
 - [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download)
 - [PyQtForSoftimage](http://github.com/caron/PyQtForSoftimage)
 
 Installation
 ------------
-You can get `wishlib` from the Python Package Index.
+Clone the repo and type in a terminal:
 
-    pip install wishlib
+    python setup.py install
 
 Notes
 -----
-For more info, refer to the [documentation](https://github.com/wishdev-project/wishlib/wiki).
+For more info, refer to the [documentation](http://github.com/csaez/wishlib/wiki).

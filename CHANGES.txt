@@ -1,3 +1,40 @@
-v0.1.0, 04-29-2013 -- Initial release.
-v0.1.3, 06-25-2013 -- SIWrapper
-v0.2.0, 12-04-2013 -- SIWrapper namespace (compatibility issues)
+2013-04-29 03:35:06     1492 +1492    -0 ec487a3 cesarte@gmail.com 	Initial release.
+2013-04-29 03:38:45     1492    +2    -2 66a2c89 cesarte@gmail.com 	Initial release.
+2013-04-29 04:40:48     1493    +1    -0 ef78733 cesarte@gmail.com 	Create placeholder
+2013-06-08 01:56:22     1493    +0    -0 909d815 cesarte@gmail.com 	new logo
+2013-06-08 01:57:40     1493    +2    -2 ebc8462 cesarte@gmail.com 	github project url
+2013-06-08 01:58:51     1629  +161   -25 834b539 cesarte@gmail.com 	SIWrapper class
+2013-06-08 03:39:32     1623    +4   -10 281a93d cesarte@gmail.com 	holder attribute on init instead of property
+2013-06-08 06:43:38     1623    +1    -1 a89b6e1 cesarte@gmail.com 	0.1.2
+2013-06-08 06:44:13     1635   +12    -0 9128ea8 cesarte@gmail.com 	auto_update on SIWrapper
+2013-06-08 06:55:13     1635    +3    -3 5b3c525 cesarte@gmail.com 	Resolving name inconsistency
+2013-06-12 21:17:46     1630   +10   -15 d773c10 cesarte@gmail.com 	file updated
+2013-06-12 21:17:54     1630    +5    -5 d1d2276 cesarte@gmail.com 	style updated
+2013-06-12 21:19:52     1634    +5    -1 27df8b9 cesarte@gmail.com 	If decode fail print a warning...
+2013-06-16 04:05:09     1634    +1    -1 6706497 cesarte@gmail.com 	v1.0.3
+2013-06-16 04:07:13     1559  +261  -336 d9a61ba cesarte@gmail.com 	Coding style
+2013-06-16 04:07:43     1559    +3    -3 c82241f cesarte@gmail.com 	Requirements
+2013-06-16 04:22:04     1559   +81   -81 aba15c2 cesarte@gmail.com 	emulate pyqt structure,and clean out __init__.py
+2013-06-18 04:00:07     1579   +32   -12 9b7e1e3 cesarte@gmail.com 	show_qt() added
+2013-06-25 03:00:05     1609   +30    -0 d110f12 cesarte@gmail.com 	no_inspect and one_undo decorators
+2013-06-25 03:00:14     1608    +3    -4 0695227 cesarte@gmail.com 	readme updated
+2013-06-25 07:14:50     1608    +3    -3 745b64a cesarte@gmail.com 	encode function fixed
+2013-06-25 21:05:10     1609    +5    -4 8f0c5f3 cesarte@gmail.com 	cleanup
+2013-06-25 23:46:25     1610    +2    -1 d3a4b03 cesarte@gmail.com 	SIWrapper
+2013-06-26 03:17:14     1616    +9    -3 c474427 cesarte@gmail.com 	show_qt() now supports modal mode
+2013-06-26 03:17:24     1616    +1    -1 2845b17 cesarte@gmail.com 	link to docs
+2013-06-27 08:04:53     1630   +18    -4 7ec3b9b cesarte@gmail.com 	v0.1.4
+2013-07-03 12:22:16     1644   +15    -1 2733db9 cesarte@gmail.com 	cmd_wrapper added, show_qt docstring updated
+2013-07-25 10:45:56     1649    +5    -0 183243a cesarte@gmail.com 	Fix style on tabWidget (disable border on focus)
+2013-07-25 10:47:11     1657   +12    -4 3225dc1 cesarte@gmail.com 	BUGFIX: Qt codec (by default only show png) added on sianchor()
+2013-07-25 10:47:53     1693   +36    -0 aaf3e72 cesarte@gmail.com 	Qt decorators
+2013-07-31 04:26:05     1692    +4    -5 ff716b0 cesarte@gmail.com 	Focus exception on QRadioButton and QGroupBox widgets
+2013-07-31 04:27:55     1725   +33    -0 639e266 cesarte@gmail.com 	python utilities added
+2013-12-04 17:33:28     1778   +72   -19 45e2624 cesarte@gmail.com 	SIWrapper namespace
+2013-12-16 15:12:44     1782   +13    -9 1c69667 cesarte@gmail.com 	style tweaks: no border on menubar:focus
+2013-12-16 22:28:36     1782    +1    -1 fd59afa cesarte@gmail.com 	style tweaks: custom window icon
+2014-01-11 23:52:24     1827  +334  -289 375e14f cesarte@gmail.com 	wishlib.si is now a package (backward compatible)
+2014-01-24 17:01:49     1824   +21   -24 0052772 cesarte@gmail.com 	multiply_vector_matrix and rotate_vector added
+2014-01-24 17:02:30     1886   +63    -1 b774bd2 cesarte@gmail.com 	raycast and project_into_mesh moved to utils
+2014-01-28 14:32:53     1893   +16    -9 a02ebee cesarte@gmail.com 	BUGFIX: name collision filtering qt instances in show_qt
+2014-01-28 15:16:48     1893    +5    -5 0a6017f cesarte@gmail.com 	show_qt(): force_style arg added
