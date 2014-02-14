@@ -246,6 +246,10 @@ QCheckBox:disabled {
   color: #414141;
 }
 
+QCheckBox:focus {
+  border: 0;
+}
+
 QDockWidget::title {
   text-align: center;
   spacing: 3px; /* spacing between items in the tool bar

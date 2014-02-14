@@ -21,25 +21,7 @@
 # THE SOFTWARE.
 
 from PyQt4 import QtGui, QtCore
-import os
-
-file_dir = os.path.dirname(__file__)
-
-
-def _setStyle(widget, force_style_factory=True):
-    if force_style_factory:
-        widget.setStyle(QtGui.QStyleFactory().create("plastique"))
-    style_file = os.path.join(file_dir, "style",
-                              "darkorange.stylesheet")
-    with file(style_file) as f:
-        stylesheet = f.read()
-    widget.setStyleSheet(stylesheet)
-    _setIcon(widget)
-
-
-def _setIcon(widget):
-    icon_file = os.path.join(file_dir, "images", "cs-icon.png")
-    widget.setWindowIcon(QtGui.QIcon(icon_file))
+from .utils import _setStyle
 
 
 class QWidget(QtGui.QWidget):
@@ -54,16 +36,14 @@ class QWidget(QtGui.QWidget):
 
 class QProgressDialog(QtGui.QProgressDialog):
 
-    def __init__(self, parent, label=""):
+    def __init__(self, parent, label="Work in progress..."):
         super(QProgressDialog, self).__init__(parent)
         # progress dialog defaults
         self.setWindowTitle("Working...")
         self.setLabelText(label)
         self.setMinimum(0)
-        self.setMaximum(100)
-        self.setValue(25)
+        self.setMaximum(0)
         self.setCancelButton(None)
-        self.setAutoClose(True)
         # styling
         _setStyle(self, False)
         # garbage collection
