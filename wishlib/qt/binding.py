@@ -29,7 +29,7 @@ class Qt(ModuleType):
 
     def __init__(self, *args, **kargs):
         super(Qt, self).__init__(*args, **kargs)
-        self._bindings = ("PySide", "PyQt4")  # favors the first one
+        self._bindings = ("PyQt4", "PySide")  # favors the first one
         for b in self._bindings:
             try:
                 imp.find_module(b)
