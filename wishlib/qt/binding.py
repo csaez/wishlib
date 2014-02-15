@@ -21,45 +21,43 @@
 # THE SOFTWARE.
 
 import sys
+import imp
 from types import ModuleType
-from importlib import import_module
-
-try:
-    import PySide  # init pyside, otherwise relative imports will fail
-except:
-    pass
 
 
 class Qt(ModuleType):
 
     def __init__(self, *args, **kargs):
         super(Qt, self).__init__(*args, **kargs)
-        self.bindings = ("PySide", "PyQt4")  # favors the first one
+        self._bindings = ("PySide", "PyQt4")  # favors the first one
+        for b in self._bindings:
+            try:
+                imp.find_module(b)
+            except ImportError:
+                continue
+            self._active = b
+            break
+        if not hasattr(self, "_active"):
+            raise Exception("PyQt4/PySide not found!")
+
 
     @property
     def active(self):
-        if hasattr(self, "_active"):
-            return self._active
-        for b in self.bindings:
-            try:
-                import_module(b)
-                self.active = b
-                return self._active
-            except Exception as err:
-                print err
-        raise Exception("PyQt4/PySide not found!")
+        return self._active
 
     @active.setter
     def active(self, value):
-        if value in self.bindings:
+        if value in self._bindings:
             self._active = value
 
     def __getattr__(self, attr):
-        if attr not in self.__dict__:
-            return import_module("{0}.{1}".format(self.active, attr))
-        return self.__dict__.get(attr)
+        item = self.__dict__.get(attr)
+        if item is None:
+            top_lvl = __import__("{0}.{1}".format(self.active, attr))
+            item = getattr(top_lvl, attr)
+        return item
 
-# trick python overriding the module cache with the instance itself,
-# this way 'magic methods' and properties works at a module level
+# trick python overriding the module with an instance,
+# ref is needed to avoid python gc
 ref = sys.modules[__name__]
 sys.modules[__name__] = Qt(__name__)

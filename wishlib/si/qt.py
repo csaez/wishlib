@@ -33,10 +33,6 @@ def sianchor():
     """
     # get the anchor from pyqtfromsoftimage addon
     sianchor = si.getQtSoftimageAnchor()
-    # load plugins
-    import PyQt4
-    path = os.path.join(os.path.dirname(PyQt4.__file__), "plugins")
-    QtGui.QApplication.instance().addLibraryPath(path)
     # return a python wrapped anchor
     return wrapinstance(long(sianchor), QtGui.QWidget)
 

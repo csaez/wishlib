@@ -51,7 +51,6 @@ def loadUi(uifile, baseinstance=None, package="", custom_widgets=None):
 
     elif active == "PySide":
         from PySide.QtUiTools import QUiLoader
-        from PySide.QtCore import QMetaObject
 
         class CustomUiLoader(QUiLoader):
             class_aliases = {"Line": "QFrame"}
@@ -86,13 +85,13 @@ def loadUi(uifile, baseinstance=None, package="", custom_widgets=None):
         # QUiLoader.registerCustomWidget(), but this does not work in
         # PySide 1.0.6: it simply segfaults...
         ui = loader.load(uifile)
-        QMetaObject.connectSlotsByName(ui)
+        QtCore.QMetaObject.connectSlotsByName(ui)
         return ui
 
 
 # thank you Nathan Horne
 # http://nathanhorne.com/?p=485
-def wrapinstance(self, ptr, base=None):
+def wrapinstance(ptr, base=None):
     """convert a pointer to a Qt class instance (PySide/PyQt compatible)"""
     if ptr is None:
         return None
