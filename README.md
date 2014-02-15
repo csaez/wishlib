@@ -1,12 +1,12 @@
 WishLib
 =======
-`wishlib` is a multi-purpose library used by
-[wishdev](http://wishdev.blogspot.com) developments.
+`wishlib` is a multi-purpose/core library.
 
-Requirements / Dependencies
+Dependencies
 -------------
-- [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt/download)
 - [PyQtForSoftimage](http://github.com/caron/PyQtForSoftimage)
+- [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt) or
+[PySide](http://www.pyside.org)
 
 Installation
 ------------
