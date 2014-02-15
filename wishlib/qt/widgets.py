@@ -63,3 +63,19 @@ class QMainWindow(QtGui.QMainWindow):
         set_style(self, True)
         # garbage collection
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
+
+class QProgressDialog(QtGui.QProgressDialog):
+
+    def __init__(self, parent, label="Work in progress..."):
+        super(QProgressDialog, self).__init__(parent)
+        # progress dialog defaults
+        self.setWindowTitle("Working...")
+        self.setLabelText(label)
+        self.setMinimum(0)
+        self.setMaximum(0)
+        self.setCancelButton(None)
+        # styling
+        set_style(self, False)
+        # garbage collection
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
