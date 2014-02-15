@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from PyQt4 import QtGui, QtCore
-from .utils import _setStyle
+from .binding import QtGui, QtCore
+from .helpers import set_style
 
 
 class QWidget(QtGui.QWidget):
@@ -29,53 +29,37 @@ class QWidget(QtGui.QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
         # styling
-        _setStyle(self, True)
-        # garbage collection
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-
-
-class QProgressDialog(QtGui.QProgressDialog):
-
-    def __init__(self, parent, label="Work in progress..."):
-        super(QProgressDialog, self).__init__(parent)
-        # progress dialog defaults
-        self.setWindowTitle("Working...")
-        self.setLabelText(label)
-        self.setMinimum(0)
-        self.setMaximum(0)
-        self.setCancelButton(None)
-        # styling
-        _setStyle(self, False)
+        set_style(self, True)
         # garbage collection
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
 
 class QMenu(QtGui.QMenu):
 
-    def __init__(self, parent):
-        super(QMenu, self).__init__(parent)
+    def __init__(self, *args, **kwds):
+        super(QMenu, self).__init__(*args, **kwds)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        _setStyle(self, False)
+        set_style(self, False)
 
 
 class QDialog(QtGui.QDialog):
 
-    def __init__(self, parent):
-        super(QDialog, self).__init__(parent)
+    def __init__(self, *args, **kwds):
+        super(QDialog, self).__init__(*args, **kwds)
         # dialog defaults
         self.setWindowFlags(QtCore.Qt.Window |
                             QtCore.Qt.WindowMinimizeButtonHint)
         # styling
-        _setStyle(self, True)
+        set_style(self, True)
         # garbage collection
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
 
 class QMainWindow(QtGui.QMainWindow):
 
-    def __init__(self, parent):
-        super(QMainWindow, self).__init__(parent)
+    def __init__(self, *args, **kwds):
+        super(QMainWindow, self).__init__(*args, **kwds)
         # styling
-        _setStyle(self, True)
+        set_style(self, True)
         # garbage collection
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)

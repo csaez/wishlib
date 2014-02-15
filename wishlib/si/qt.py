@@ -21,11 +21,9 @@
 # THE SOFTWARE.
 
 import os
-import sip
-from PyQt4.QtGui import QWidget, QApplication
 
 from .shortcuts import si
-from ..qt.QtGui import _setStyle
+from ..qt import QtGui, wrapinstance, set_style
 
 
 def sianchor():
@@ -38,9 +36,9 @@ def sianchor():
     # load plugins
     import PyQt4
     path = os.path.join(os.path.dirname(PyQt4.__file__), "plugins")
-    QApplication.instance().addLibraryPath(path)
+    QtGui.QApplication.instance().addLibraryPath(path)
     # return a python wrapped anchor
-    return sip.wrapinstance(long(sianchor), QWidget)
+    return wrapinstance(long(sianchor), QtGui.QWidget)
 
 
 def show_qt(qt_class, modal=False, onshow_event=None, force_style=False):
@@ -72,5 +70,5 @@ def show_qt(qt_class, modal=False, onshow_event=None, force_style=False):
         dialog.show()
         dialog.raise_()  # ensures dialog window is on top
     if force_style:
-        _setStyle(dialog)
+        set_style(dialog)
     return dialog
