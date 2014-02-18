@@ -40,7 +40,6 @@ class Qt(ModuleType):
         if not hasattr(self, "_active"):
             raise Exception("PyQt4/PySide not found!")
 
-
     @property
     def active(self):
         return self._active
@@ -53,7 +52,8 @@ class Qt(ModuleType):
     def __getattr__(self, attr):
         item = self.__dict__.get(attr)
         if item is None:
-            top_lvl = __import__("{0}.{1}".format(self.active, attr))
+            top_lvl = __import__("{0}.{1}".format(self.active, attr),
+                                 globals(), locals(), [], -1)
             item = getattr(top_lvl, attr)
         return item
 
