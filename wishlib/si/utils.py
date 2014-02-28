@@ -22,7 +22,7 @@
 
 from collections import namedtuple
 
-from .shortcuts import si, sidict, disp, simath
+from .shortcuts import si, sidict, simath
 from .math import multiply_vector_matrix, rotate_vector
 
 
@@ -32,15 +32,6 @@ def siget(fullname=""):
     if not len(fullname):
         return None
     return sidict.GetObject(fullname, False)
-
-
-def inside_softimage():
-    """Returns a boolean indicating if the code is executed inside softimage."""
-    try:
-        disp('XSI.Application')
-        return True
-    except:
-        return False
 
 
 def cmd_wrapper(cmd_name, **kwds):

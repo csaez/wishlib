@@ -20,53 +20,46 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from ..qt import init
-init("pyqt4")
-from ..qt import QtGui, QtCore, wrapinstance, set_style
-from .shortcuts import si
+import wishlib.qt
+wishlib.qt.initialize("pyside")
+
+from ..qt import QtGui, wrapinstance, set_style
+import maya.OpenMayaUI as apiUI
 
 
-def sianchor():
+def anchor():
+    ptr = apiUI.MQtUtil.mainWindow()
+    return wrapinstance(ptr, QtGui.QMainWindow)
+
+
+def show_qt(qt_class, modal=False, onshow_event=None, force_style=False):
     """
-    Return pyqt anchor inside softimage, this function relies on
-    pyqtforsoftimage beta5 (https://github.com/caron/PyQtForSoftimage).
-    """
-    # get the anchor from pyqtfromsoftimage addon
-    sianchor = si.getQtSoftimageAnchor()
-    # return a python wrapped anchor
-    return wrapinstance(long(sianchor), QtGui.QWidget)
-
-
-def show_qt(qt_class, modal=False, onshow_event=None, force_style=True):
-    """
-    Shows and raise a pyqt window inside softimage ensuring it's not duplicated
+    Shows and raise a pyqt window ensuring it's not duplicated
     (if it's duplicated then raise the old one).
     qt_class argument should be a class/subclass of QMainWindow, QDialog or any
-    top-level window supported by PyQtForSoftimage plugin.
+    top-level widget.
     onshow_event provides a way to pass a function to execute before the window
-    is showed on screen, it can be specially handy on modal windows.
+    is showed on screen, it should be handy with modal windows.
     Returns the qt_class instance.
     """
     dialog = None
-    anchor = sianchor()
+    window = anchor()
     # look for a previous instance
-    for d in anchor.children():
+    for d in window.children():
         if isinstance(d, qt_class):
             dialog = d
     # if there's no previous instance then create a new one
     if dialog is None:
-        dialog = qt_class(anchor)
+        dialog = qt_class(window)
     # execute callback
     if onshow_event:
         onshow_event(dialog)
-    # stylize and gc
-    if force_style:
-        set_style(dialog, not isinstance(dialog, QtGui.QMenu))
-    dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose)
     # show dialog
     if modal:
         dialog.exec_()
     else:
         dialog.show()
         dialog.raise_()  # ensures dialog window is on top
+    if force_style:
+        set_style(dialog)
     return dialog

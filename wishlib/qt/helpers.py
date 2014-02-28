@@ -22,10 +22,10 @@
 
 import os
 import sys
-from .binding import QtGui, QtCore, active
 
 
 def set_style(widget, force_style_factory=True):
+    from wishlib.qt import QtGui
     if force_style_factory:
         widget.setStyle(QtGui.QStyleFactory().create("plastique"))
     style_file = os.path.join(os.path.dirname(__file__), "style",
@@ -37,6 +37,7 @@ def set_style(widget, force_style_factory=True):
 
 
 def set_icon(widget):
+    from wishlib.qt import QtGui
     icon_file = os.path.join(os.path.dirname(__file__),
                              "images", "cs-icon.png")
     widget.setWindowIcon(QtGui.QIcon(icon_file))
@@ -45,6 +46,7 @@ def set_icon(widget):
 # Thanks to ros-visualization
 # http://github.com/ros-visualization/python_qt_binding
 def loadUi(uifile, baseinstance=None, package="", custom_widgets=None):
+    from wishlib.qt import QtCore, active
     if active == "PyQt4":
         from PyQt4 import uic
         return uic.loadUi(uifile, baseinstance, package)
@@ -96,8 +98,9 @@ def wrapinstance(ptr, base=None):
     if ptr is None:
         return None
     ptr = long(ptr)  # Ensure type
+    from wishlib.qt import active, QtCore, QtGui
     if active == "PySide":
-        from PySide import shiboken
+        import shiboken
         if base is None:
             qObj = shiboken.wrapInstance(ptr, QtCore.QObject)
             metaObj = qObj.metaObject()
@@ -112,5 +115,5 @@ def wrapinstance(ptr, base=None):
         return shiboken.wrapInstance(ptr, base)
     elif active == "PyQt4":
         import sip
-        return sip.wrapinstance(ptr, base)
+        return sip.wrapinstance(ptr, QtGui.QWidget)
     return None
