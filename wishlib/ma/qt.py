@@ -21,9 +21,9 @@
 # THE SOFTWARE.
 
 import wishlib.qt
-wishlib.qt.initialize("pyside")
+wishlib.qt.init("pyside")
 
-from ..qt import QtGui, wrapinstance, set_style
+from ..qt import QtGui, QtCore, wrapinstance, set_style
 import maya.OpenMayaUI as apiUI
 
 
@@ -54,12 +54,17 @@ def show_qt(qt_class, modal=False, onshow_event=None, force_style=False):
     # execute callback
     if onshow_event:
         onshow_event(dialog)
+    # stylize
+    if force_style:
+        set_style(dialog, not isinstance(dialog, QtGui.QMenu))
+    # gc
+    dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose)
     # show dialog
+    pos = QtGui.QCursor.pos()
+    dialog.move(pos.x(), pos.y())
     if modal:
         dialog.exec_()
     else:
         dialog.show()
         dialog.raise_()  # ensures dialog window is on top
-    if force_style:
-        set_style(dialog)
     return dialog
