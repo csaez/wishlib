@@ -1,9 +1,12 @@
-from win32com.client import Dispatch as disp
-
-
 def inside_softimage():
     """Returns a boolean indicating if the code is executed inside softimage."""
     try:
+        import maya
+        return False
+    except ImportError:
+        pass
+    try:
+        from win32com.client import Dispatch as disp
         disp('XSI.Application')
         return True
     except:

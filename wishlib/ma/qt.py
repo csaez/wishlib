@@ -20,9 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import wishlib.qt
-wishlib.qt.init("pyside")
-
+from wishlib.qt import init
+init("pyside")
 from ..qt import QtGui, QtCore, wrapinstance, set_style
 import maya.OpenMayaUI as apiUI
 
@@ -51,9 +50,6 @@ def show_qt(qt_class, modal=False, onshow_event=None, force_style=False):
     # if there's no previous instance then create a new one
     if dialog is None:
         dialog = qt_class(window)
-    # execute callback
-    if onshow_event:
-        onshow_event(dialog)
     # stylize
     if force_style:
         set_style(dialog, not isinstance(dialog, QtGui.QMenu))
@@ -62,6 +58,9 @@ def show_qt(qt_class, modal=False, onshow_event=None, force_style=False):
     # show dialog
     pos = QtGui.QCursor.pos()
     dialog.move(pos.x(), pos.y())
+    # execute callback
+    if onshow_event:
+        onshow_event(dialog)
     if modal:
         dialog.exec_()
     else:
