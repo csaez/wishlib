@@ -22,6 +22,8 @@
 
 import os
 import sys
+from cStringIO import StringIO
+from xml.etree import ElementTree as xml
 
 
 def set_style(widget, force_style_factory=True):
@@ -116,4 +118,34 @@ def wrapinstance(ptr, base=None):
     elif active == "PyQt4":
         import sip
         return sip.wrapinstance(ptr, QtGui.QWidget)
+    return None
+
+
+# thank you Nathan Horne
+# http://nathanhorne.com/?p=451
+def loadUiType(ui_file):
+    from wishlib.qt import active, QtGui
+    if active == "PySide":
+        import pysideuic
+        parsed = xml.parse(ui_file)
+        widget_class = parsed.find('widget').get('class')
+        form_class = parsed.find('class').text
+
+        with open(ui_file, 'r') as f:
+            o = StringIO()
+            frame = {}
+
+            pysideuic.compileUi(f, o, indent=0)
+            pyc = compile(o.getvalue(), '<string>', 'exec')
+            exec pyc in frame
+
+            # Fetch the base_class and form class based on their type in the
+            # xml from designer
+            form_class = frame['Ui_%s' % form_class]
+            # base_class = eval('QtGui.%s' % widget_class)
+            base_class = getattr(QtGui, widget_class)
+        return form_class, base_class
+    elif active == "PyQt4":
+        from PyQt4 import uic
+        return uic.loadUiType(ui_file)
     return None

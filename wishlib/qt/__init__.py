@@ -49,7 +49,7 @@ def init(favor=None):
     main_mod = __import__(active, globals(), locals(), [], -1)
 
     # local imports
-    from .helpers import set_style, set_icon, loadUi, wrapinstance
+    from .helpers import set_style, set_icon, loadUi, loadUiType, wrapinstance
     from . import decorators
 
     # re-route modules
