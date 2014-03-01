@@ -20,11 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from ez_setup import use_setuptools
+use_setuptools()
 from setuptools import setup, find_packages
 
 setup(
     name="wishlib",
-    version="0.4.0",
+    version="0.4.1",
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     package_data={"wishlib.qt": ["images/*.*", "style/*.*"]},
     author="Cesar Saez",
