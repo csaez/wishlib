@@ -60,7 +60,7 @@ def map_recursive(function, iterable):
     Apply function recursively to every item or value of iterable and returns a
     new iterable object with the results.
     """
-    if hasattr(iterable, "__iter__"):
+    if isiterable(iterable):
         dataOut = iterable.__class__()
         for i in iterable:
             if isinstance(dataOut, dict):
@@ -72,3 +72,13 @@ def map_recursive(function, iterable):
                 dataOut.append(map_recursive(function, i))
         return dataOut
     return function(iterable)
+
+
+def isiterable(iterable):
+    if all((hasattr(iterable, "__iter__"), hasattr(iterable, "__getitem__"))):
+        try:
+            (_ for _ in iterable).next()
+            return True
+        except:
+            pass
+    return False

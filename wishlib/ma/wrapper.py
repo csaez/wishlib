@@ -41,8 +41,6 @@ def _decode(dataIn):
         try:
             dataOut = eval(dataIn)
         except:
-            # dataOut = dataIn
-            # print "WARNING:", dataIn, "cant be decoded."
             return None
     return dataOut
 
@@ -127,8 +125,8 @@ class Wrapper(object):
         if any((skip, not self._validate_key(key),
                 type(value) == property)):
             return
-        if "pymel" in str(type(value)):  # is it a pymel instance?
-            value = value.name()
+        # if "pymel" in str(type(value)):  # is it a pymel instance?
+        #     value = value.name()
         # store encoded attribute's data into its own custom attr
         key = self.namespace + key
         if not self.obj.hasAttr(key):
