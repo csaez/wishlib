@@ -53,3 +53,22 @@ class JSONDict(dict):
     def __updatejson__(self):
         with open(self.fp, "w") as fp:
             json.dump(self, fp, indent=4)
+
+
+def map_recursive(function, iterable):
+    """
+    Apply function recursively to every item or value of iterable and returns a
+    new iterable object with the results.
+    """
+    if hasattr(iterable, "__iter__"):
+        dataOut = iterable.__class__()
+        for i in iterable:
+            if isinstance(dataOut, dict):
+                dataOut[i] = map_recursive(function, iterable[i])
+            else:
+                # convert to list and append
+                if not isinstance(dataOut, list):
+                    dataOut = list(dataOut)
+                dataOut.append(map_recursive(function, i))
+        return dataOut
+    return function(iterable)

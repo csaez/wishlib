@@ -20,24 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from .shortcuts import si, C
-from .utils import siget
+from pymel import core as pm
 from ..utils import map_recursive
 
 
 # ENCODE / DECODE SOFTIMAGE DATA
 def _encode(dataIn):
     try:
-        dataOut = "si:" + str(dataIn.FullName)
+        dataOut = "pm:" + str(dataIn.name())
     except:
         dataOut = repr(dataIn)
     return dataOut
 
 
 def _decode(dataIn):
-    if dataIn.startswith("si:"):
-        fullname = dataIn.replace("si:", "")
-        dataOut = siget(fullname)
+    if dataIn.startswith("pm:"):
+        fullname = dataIn.replace("pm:", "")
+        dataOut = pm.PyNode(fullname)
     else:
         try:
             dataOut = eval(dataIn)
@@ -51,16 +50,14 @@ encode = lambda x: repr(map_recursive(_encode, x))
 decode = lambda x: map_recursive(_decode, eval(x))
 
 
-# CLASSES
-class SIWrapper(object):
+class Wrapper(object):
 
     """
     The class is designed to be used as base class in situations where a python
-    object is linked to a softimage dispatched object (otherwise json should be
-    a far better solution) and we need some sort of serialization to rebuild the
-    class on each execution.
-    SIWrapper class override python magic methods in order to create softimage
-    custom parameters where encoded/serialized data is stored.
+    object is linked to a maya node and we need some sort of serialization to
+    rebuild the instance.
+    Wrapper class override python magic methods storing encoded/serialized data
+    is maya attributes as strings.
     """
 
     @classmethod
@@ -77,86 +74,71 @@ class SIWrapper(object):
         return wrapper
 
     # attribute prefixes excluded from serialization
-    EXCEPTIONS = ("Name", "obj", "holder", "_holder")
+    EXCEPTIONS = ("obj", "node")
 
-    def __init__(self, obj, holdername="wrapperdata"):
+    def __init__(self, obj, holdername="metadata_"):
         """
-        The init method will create a softimage custom property (self.holder)
-        to store/read data via python magic methods.
-        The class should be initialized with a softimage host object (stored at
-        self.obj) and an optional holdername argument which will be used as the
-        softimage custom property name.
+        The class should be initialized with a maya host node (stored at
+        self.obj) and an optional namespace which will be used as prefix on
+        maya attribute names.
         """
-        self.namespace = "data_"
-        self.obj = obj
-        self.holder = self.obj.Properties(holdername)
-        if not self.holder:
-            self.holder = self.obj.AddCustomProperty(holdername)
+        if isinstance(obj, basestring):
+            obj = pm.PyNode(obj)
+        self.obj = self.node = obj
+        self.namespace = holdername
         # every time we get a string-like value from softimage's sdk it should be
         # converted to str, in some version they switched to unicode but the
         # code still works with str internally.
-        for param in self.holder.Parameters:
-            if self._validate_key(str(param.Name)):
-                # We are passing skip_softimage = True, otherwise parameters
+        for attr in self.obj.listAttr():
+            attr_name = str(attr.name().split(".")[-1])
+            if self.namespace not in attr_name:
+                continue
+            if self._validate_key(attr_name):
+                # We are passing skip = True, otherwise parameters
                 # would be overriden with raw values. Internal use only!
-                safe_name = param.Name.replace(self.namespace, "")
-                self.__setattr__(str(safe_name), decode(str(param.Value)),
-                                 skip_softimage=True)
+                safe_name = attr_name.replace(self.namespace, "")
+                self.__setattr__(safe_name, decode(attr.get()), skip=True)
 
     def update(self):
         """
-        This method should be called when you want to ensure all cached attributes
-        are in sync with the actual object attributes at runtime.
+        This method should be called to ensure all cached attributes
+        are in sync with the metadata at runtime.
         This happens because attributes could store mutable objects and be
         modified outside the scope of this class.
         The most common idiom that isn't automagically caught is mutating a list
         or dictionary. Lets say 'user' object have an attribute named 'friends'
         containing a list, calling 'user.friends.append(new_friend)' only get the
-        attribute, SIWrapper isn't aware that the object returned was modified
+        attribute, Wrapper isn't aware that the object returned was modified
         and the cached data is not updated.
         """
-        self.holder = siget(self.holder.FullName)  # fix dispatch issues
         for key, value in self.__dict__.iteritems():
             key = self.namespace + key
             if self._validate_key(key):
-                if not self.holder.Parameters(key):
-                    self.holder.AddParameter3(key, C.siString)
-                self.holder.Parameters(key).Value = encode(value)
+                if not self.obj.hasAttr(key):
+                    pm.addAttr(self.obj, ln=key, dt="string")
+                self.obj.attr(key).set(encode(value))
 
     def _validate_key(self, key):
         """Returns a boolean indicating if the attribute name is valid or not"""
         return not any([key.startswith(i) for i in self.EXCEPTIONS])
-        # return True
 
-    def __setattr__(self, key, value, skip_softimage=False):
+    def __setattr__(self, key, value, skip=False):
         object.__setattr__(self, key, value)
-        # super(SIWrapper, self).__setattr__(key, value)
-        if any((skip_softimage, not self._validate_key(key),
-                type(value) == property, not hasattr(self, "holder"))):
+        if any((skip, not self._validate_key(key),
+                type(value) == property)):
             return
-        # CHECK SOFTIMAGE OBJECTS
-        # check if value has a FullName attribute, if not means it's a
-        # softimage collection and should be converted to a list in order to
-        # work with map_recursively later on.
-        try:
-            if si.ClassName(value):  # is a softimage object
-                try:
-                    value.FullName  # has a fullname
-                except:
-                    value = list(value)  # it's a xsicollection
-        except:
-            pass
-        # store encoded attribute's data into its own custom parameter
-        self.holder = siget(self.holder.FullName)
+        if "pymel" in str(type(value)):  # is it a pymel instance?
+            value = value.name()
+        # store encoded attribute's data into its own custom attr
         key = self.namespace + key
-        if not self.holder.Parameters(key):
-            self.holder.AddParameter3(key, C.siString)
-        self.holder.Parameters(key).Value = encode(value)
+        if not self.obj.hasAttr(key):
+            pm.addAttr(self.obj, ln=key, dt="string")
+        self.obj.attr(key).set(encode(value))
 
     def __delattr__(self, key):
-        super(SIWrapper, self).__delattr__(key)
-        # remove the custom parameter
+        super(Wrapper, self).__delattr__(key)
+        # remove attr
         key = self.namespace + key
-        param = self.holder.Parameters(key)
-        if param:
-            self.holder.RemoveParameter(param)
+        attr = self.obj.attr(key)
+        if attr:
+            pm.deleteAttr(attr)

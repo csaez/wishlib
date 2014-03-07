@@ -7,3 +7,4 @@ def inside_maya():
 
 if inside_maya():
     from .qt import *
+    from .wrapper import Wrapper
