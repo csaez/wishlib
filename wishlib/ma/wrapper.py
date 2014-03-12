@@ -84,16 +84,13 @@ class Wrapper(object):
             obj = pm.PyNode(obj)
         self.obj = self.node = obj
         self.namespace = holdername
-        # every time we get a string-like value from softimage's sdk it should be
-        # converted to str, in some version they switched to unicode but the
-        # code still works with str internally.
         for attr in self.obj.listAttr():
             attr_name = str(attr.name().split(".")[-1])
             if self.namespace not in attr_name:
                 continue
             if self._validate_key(attr_name):
-                # We are passing skip = True, otherwise parameters
-                # would be overriden with raw values. Internal use only!
+                # pass skip = True, otherwise parameters would override with
+                # raw values. Internal use only!
                 safe_name = attr_name.replace(self.namespace, "")
                 self.__setattr__(safe_name, decode(attr.get()), skip=True)
 
@@ -110,14 +107,16 @@ class Wrapper(object):
         and the cached data is not updated.
         """
         for key, value in self.__dict__.iteritems():
-            key = self.namespace + key
+            key = self._compose(key)
             if self._validate_key(key):
                 if not self.obj.hasAttr(key):
                     pm.addAttr(self.obj, ln=key, dt="string")
                 self.obj.attr(key).set(encode(value))
 
+    def _compose(self, key):
+        return self.namespace + "_" + key
+
     def _validate_key(self, key):
-        """Returns a boolean indicating if the attribute name is valid or not"""
         return not any([key.startswith(i) for i in self.EXCEPTIONS])
 
     def __setattr__(self, key, value, skip=False):
@@ -125,18 +124,14 @@ class Wrapper(object):
         if any((skip, not self._validate_key(key),
                 type(value) == property)):
             return
-        # if "pymel" in str(type(value)):  # is it a pymel instance?
-        #     value = value.name()
-        # store encoded attribute's data into its own custom attr
-        key = self.namespace + key
+        key = self._compose(key)
         if not self.obj.hasAttr(key):
-            pm.addAttr(self.obj, ln=key, dt="string")
+            self.obj.addAttr(key, dt="string")
         self.obj.attr(key).set(encode(value))
 
     def __delattr__(self, key):
         super(Wrapper, self).__delattr__(key)
-        # remove attr
-        key = self.namespace + key
+        key = self._compose(key)
         attr = self.obj.attr(key)
         if attr:
             pm.deleteAttr(attr)
