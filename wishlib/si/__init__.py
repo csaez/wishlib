@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+
+
 def inside_softimage():
     """Returns a boolean indicating if the code is executed inside softimage."""
     try:

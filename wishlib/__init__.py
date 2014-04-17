@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from . import utils
 from .si import inside_softimage
 from .ma import inside_maya

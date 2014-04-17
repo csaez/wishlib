@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 def inside_maya():
     try:
         import maya  # detect maya by ducktyping

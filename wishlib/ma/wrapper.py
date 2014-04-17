@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+from __future__ import absolute_import
+
 from pymel import core as pm
 from ..utils import map_recursive
 
@@ -120,9 +122,11 @@ class Wrapper(object):
         return not any([key.startswith(i) for i in self.EXCEPTIONS])
 
     def __setattr__(self, key, value, skip=False):
-        object.__setattr__(self, key, value)
+        super(Wrapper, self).__setattr__(key, value)
         if any((skip, not self._validate_key(key),
                 type(value) == property)):
+            return
+        if not hasattr(self, "namespace"):
             return
         key = self._compose(key)
         if not self.obj.hasAttr(key):
