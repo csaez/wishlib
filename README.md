@@ -1,11 +1,18 @@
 WishLib
 =======
-`wishlib` is a multi-purpose/core library for Autodesk Maya and Softimage developments.
+`wishlib` is a multi-purpose library for Autodesk Maya and Softimage
+developments.
+
+Highlights
+----------
+* Abstraction of PyQt/PySide bindings.
+* Serialization through `wishlib.Wrapper` base class.
+* Convenients utility functions/shortcuts for Autodesk Maya and Softimage.
 
 Dependencies
 -------------
 - [PyQtForSoftimage](http://github.com/caron/PyQtForSoftimage)
-- [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt) or
+- [PyQt4](http://www.riverbankcomputing.co.uk/software/pyqt) and/or
 [PySide](http://www.pyside.org)
 
 Installation
@@ -24,7 +31,7 @@ to start making your changes (make sure to isolate your changes in a local branc
 - Write a test which shows that the bug was fixed or that the feature works
 as expected.
 - Send a pull request and bug the maintainer until it gets merged and
-published. :) Make sure to add yourself to `CONTRIBUTORS.txt`
+published. :) Make sure to add yourself to `CONTRIBUTORS.md`
 
 Notes
 -----
