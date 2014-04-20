@@ -21,33 +21,26 @@
 # THE SOFTWARE.
 
 from __future__ import absolute_import
+import types
 
 from pymel import core as pm
-from ..utils import map_recursive
 
 
-# ENCODE / DECODE SOFTIMAGE DATA
-def _encode(dataIn):
+# ENCODE / DECODE DATA
+def encode(dataIn):
+    dataOut = repr(dataIn)
+    return dataOut
+
+
+def decode(dataIn, attr):
     try:
-        dataOut = "pm:" + str(dataIn.name())
-    except:
-        dataOut = repr(dataIn)
-    return dataOut
-
-
-def _decode(dataIn):
-    if dataIn.startswith("pm:"):
-        fullname = dataIn.replace("pm:", "")
-        dataOut = pm.PyNode(fullname)
-    else:
-        try:
+        if attr.type() == 'message':
+            dataOut = pm.listConnections(attr)[0]
+        else:
             dataOut = eval(dataIn)
-        except:
-            return None
+    except:
+        return None
     return dataOut
-
-encode = lambda x: repr(map_recursive(_encode, x))
-decode = lambda x: map_recursive(_decode, eval(x))
 
 
 class Wrapper(object):
@@ -74,7 +67,7 @@ class Wrapper(object):
         return wrapper
 
     # attribute prefixes excluded from serialization
-    EXCEPTIONS = ("obj", "node")
+    EXCEPTIONS = ["obj", "node"]
 
     def __init__(self, obj, holdername="metadata_"):
         """
@@ -86,7 +79,7 @@ class Wrapper(object):
             obj = pm.PyNode(obj)
         self.obj = self.node = obj
         self.namespace = holdername
-        for attr in self.obj.listAttr():
+        for attr in self.obj.listAttr(ud=True):
             attr_name = str(attr.name().split(".")[-1])
             if self.namespace not in attr_name:
                 continue
@@ -94,7 +87,7 @@ class Wrapper(object):
                 # pass skip = True, otherwise parameters would override with
                 # raw values. Internal use only!
                 safe_name = attr_name.replace(self.namespace, "")
-                self.__setattr__(safe_name, decode(attr.get()), skip=True)
+                self.__setattr__(safe_name, decode(attr.get(), attr), skip=True)
 
     def update(self):
         """
@@ -116,7 +109,7 @@ class Wrapper(object):
                 self.obj.attr(key).set(encode(value))
 
     def _compose(self, key):
-        return self.namespace + "_" + key
+        return self.namespace + key
 
     def _validate_key(self, key):
         return not any([key.startswith(i) for i in self.EXCEPTIONS])
@@ -130,8 +123,33 @@ class Wrapper(object):
             return
         key = self._compose(key)
         if not self.obj.hasAttr(key):
-            self.obj.addAttr(key, dt="string")
-        self.obj.attr(key).set(encode(value))
+            if isinstance(value, types.NoneType):
+                self.obj.addAttr(key, at="message")
+            else:
+                try:
+                    pm.PyNode(value)
+                    self.obj.addAttr(key, at="message")
+                    pm.connectAttr(value + '.message', (self.obj + '.' + key),
+                                   f=True)
+                except:
+                    self.obj.addAttr(key, dt="string")
+                    self.obj.attr(key).set(encode(value))
+        else:
+            if isinstance(value, types.NoneType):
+                try:
+                    connectionAttr = pm.listConnections('%s.%s' % (self.node,
+                                                        key), plugs=True)[0]
+                    pm.disconnectAttr(connectionAttr, '%s.%s' % (self.node,
+                                                                 key))
+                except:
+                    pass
+            else:
+                try:
+                    pm.PyNode(value)
+                    pm.connectAttr(value + '.message', (self.obj + '.' + key),
+                                   f=True)
+                except:
+                    self.obj.attr(key).set(encode(value))
 
     def __delattr__(self, key):
         super(Wrapper, self).__delattr__(key)

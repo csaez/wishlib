@@ -8,5 +8,9 @@ def inside_maya():
         return False
 
 if inside_maya():
+    from . import qt
+    reload(qt)
     from .qt import *
+    from . import wrapper
+    reload(wrapper)
     from .wrapper import Wrapper
